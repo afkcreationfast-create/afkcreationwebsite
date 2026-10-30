@@ -1,0 +1,22 @@
+CREATE TABLE IF NOT EXISTS users (
+  id BIGSERIAL PRIMARY KEY,
+  email TEXT NOT NULL UNIQUE,
+  password_hash TEXT NOT NULL,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS sites (
+  id BIGSERIAL PRIMARY KEY,
+  owner_id BIGINT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  subdomain TEXT NOT NULL UNIQUE,
+  title TEXT NOT NULL,
+  description TEXT NOT NULL DEFAULT '',
+  theme TEXT NOT NULL DEFAULT 'midnight',
+  content JSONB NOT NULL DEFAULT '{}'::jsonb,
+  published BOOLEAN NOT NULL DEFAULT FALSE,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS sites_owner_id_idx ON sites(owner_id);
+CREATE INDEX IF NOT EXISTS sites_published_idx ON sites(published);
